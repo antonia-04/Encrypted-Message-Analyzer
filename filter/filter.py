@@ -1,16 +1,25 @@
 # filter the file given from wireshark
-import ipaddress
-import os.path
+from scapy.utils import rdpcap
+from scapy.all import IP
+
+from filter.whatsapp_ips import load_whatsapp_ips, is_whatsapp_ip
 
 
-# load from ip_whatsapp.txt all ip addresses that belong to whatsapp
-def load_whatsapp_ips():
-    file_path = os.path.join("filter", "ip_whatsapp.txt")
-    ips = []
-    with open(file_path, 'r') as f:
-        for line in f:
-            line = line.strip()
-            if line:
-                # ip address in CIDR format!
-                ips.append(ipaddress.ip_network(line))
-    return ips
+# primul nivel de filtrare: luam doar pachetele trimise/primite de la adrese de whatsapp
+def filter_whatsapp(pcap_path):
+    whatsapp_ips = load_whatsapp_ips()
+    # loads all the packets from wireshark file
+    packets = rdpcap(pcap_path)
+
+    filtered_packets = []
+
+    for pkt in packets:
+        # verify that the packets has IP layer, else ignores
+        if IP in pkt:
+            source_ip = pkt[IP].src
+            dest_ip = pkt[IP].dst
+
+            if is_whatsapp_ip(source_ip, whatsapp_ips) or is_whatsapp_ip(dest_ip, whatsapp_ips):
+                filtered_packets.append(pkt)
+
+    return filtered_packets
