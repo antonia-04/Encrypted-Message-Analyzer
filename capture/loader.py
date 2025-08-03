@@ -1,5 +1,6 @@
 import pyshark
 
+
 def load_wireshark_file(file_path):
     try:
         print(f"FILE IS LOADING: {file_path}")
@@ -13,4 +14,3 @@ def load_wireshark_file(file_path):
     except Exception as ex:
         print("[ERROR] Error at loading!")
         return
-
