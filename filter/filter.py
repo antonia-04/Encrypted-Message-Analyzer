@@ -8,6 +8,7 @@ import datetime
 
 # primul nivel de filtrare: luam doar pachetele trimise/primite de la adrese de whatsapp
 # all packages that go/come from whatsapp servers
+# e scapy, mai util pyshark
 def filter_whatsapp(pcap_path):
     whatsapp_ips = load_whatsapp_ips()
     # loads all the packets from wireshark file
